@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}onion_blog{% endblock %}
+
+{% block page_content %}
+<div class="page-header">
+    <h1>Hello,
+    {% if current_user.is_authenticated %}
+        {{ current_user.nickname }}
+    {% else %}
+        Stranger
+    {% endif %}!
+    </h1>
+</div>
+
+    <div>
+    {% if current_user.is_authenticated %}
+    {{ wtf.quick_form(form) }}
+    {% endif %}!
+    </div>
+
+<ul class="posts">
+{% for essay in essays %}
+<li class="post">
+    <div class="post-thumbnail">
+        <a href="{{ url_for('.user', nickname=essay.author.nickname) }}">
+{#          <!--  <img class="img-rounded profile-thumbnail" src="{{ essay.author.gravatar(size=40) }}"-->#}
+        </a>
+    </div>
+    <div class="post-content">
+        <div class="post-date">{{ moment(essay.timestamp).fromNow() }}</div>
+        <div class="post-author"><a href="{{ url_for('.user', nickname=essay.author.nickname) }}">{{ essay.author.nickname }}</a></div>
+        <div class="post-body">{{ essay.body_html }}</div>
+    </div>
+</li>
+    {% endfor %}
+</ul>
+
+{% endblock %}
