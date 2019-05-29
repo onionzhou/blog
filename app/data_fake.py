@@ -8,6 +8,8 @@
 
 from app.models import User,Essay
 from app import db,create_app
+from faker import Faker
+from random import randint
 
 
 def test_sql_data():
@@ -23,13 +25,23 @@ def test_sql_data():
     db.session.add(u)
     db.session.commit()
 
-def essay():
-    bk_1 = Essay(title="人生", body="人生正文1gggg", author_id=au_1.id)
-    bk_2 = Essay(title="人生2", body="人生正文2", author_id=au_1.id)
-    bk_3 = Essay(title="人生3", body="人生正文3", author_id=au_2.id)
-    bk_4 = Essay(title="人生4", body="人生正文4", author_id=au_2.id)
-    db.session.add_all([bk_1, bk_2, bk_3, bk_4])
+def test_essay(count=100):
+
+    app = create_app('Development')
+    app_context = app.app_context()
+    app_context.push()
+
+    fake = Faker()
+    user_count = User.query.count()
+    for i in range(count):
+        u = User.query.offset(randint(0, user_count - 1)).first()
+        p = Essay(title=fake.text(max_nb_chars=64),
+                body_html=fake.text(),
+                 timestamp=fake.past_date(),
+                 author=u)
+        db.session.add(p)
     db.session.commit()
 
+
 if __name__ == '__main__':
-    test_sql_data()
+    test_essay()

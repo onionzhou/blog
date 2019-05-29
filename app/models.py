@@ -12,6 +12,8 @@ from . import db, login_manager
 from itsdangerous import TimedJSONWebSignatureSerializer as TJWSS
 from flask import current_app
 from datetime import datetime
+import bleach
+from markdown import markdown
 
 
 class User(db.Model):
@@ -75,14 +77,24 @@ class Essay(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(64))
-    body = db.Column(db.String(128)) #简介
+    body=db.Column(db.Text)
     body_html = db.Column(db.Text) #正文
     timestamp = db.Column(db.DateTime,index=True, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
+    @staticmethod
+    def on_changed_body(target, value, oldvalue, initiator):
+        allowed_tags = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code',
+                        'em', 'i', 'li', 'ol', 'pre', 'strong', 'ul',
+                        'h1', 'h2', 'h3', 'p']
+        target.body_html = bleach.linkify(bleach.clean(
+            markdown(value, output_format='html'),
+            tags=allowed_tags, strip=True))
+
     def __repr__(self):
         return '<Essay %r>' % (self.title)
 
+db.event.listen(Essay.body, 'set', Essay.on_changed_body)
 
 @login_manager.user_loader
 def load_user(user_id):

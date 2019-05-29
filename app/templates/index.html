@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% import "bootstrap/wtf.html" as wtf %}
+{% import "_macros.html" as macros %}
 
 {% block title %}onion_blog{% endblock %}
 
@@ -17,24 +18,20 @@
     <div>
     {% if current_user.is_authenticated %}
     {{ wtf.quick_form(form) }}
-    {% endif %}!
+    {% endif %}
     </div>
 
-<ul class="posts">
-{% for essay in essays %}
-<li class="post">
-    <div class="post-thumbnail">
-        <a href="{{ url_for('.user', nickname=essay.author.nickname) }}">
-{#          <!--  <img class="img-rounded profile-thumbnail" src="{{ essay.author.gravatar(size=40) }}"-->#}
-        </a>
-    </div>
-    <div class="post-content">
-        <div class="post-date">{{ moment(essay.timestamp).fromNow() }}</div>
-        <div class="post-author"><a href="{{ url_for('.user', nickname=essay.author.nickname) }}">{{ essay.author.nickname }}</a></div>
-        <div class="post-body">{{ essay.body_html }}</div>
-    </div>
-</li>
-    {% endfor %}
-</ul>
+{% include '_posts.html' %}
 
+
+{% if pagination %}
+<div class="pagination">
+    {{ macros.pagination_widget(pagination, '.index') }}
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+{{ pagedown.include_pagedown() }}
 {% endblock %}

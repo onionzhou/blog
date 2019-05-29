@@ -22,6 +22,9 @@ class Config(object):
     MAIL_USERNAME = ''
     MAIL_PASSWORD = ''
 
+    #分页设置
+    FLASKY_POSTS_PER_PAGE = 20
+
     @staticmethod
     def init_app(app):
         pass
