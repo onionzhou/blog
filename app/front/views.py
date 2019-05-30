@@ -8,8 +8,8 @@
 
 from flask import render_template, redirect, url_for, request, current_app,flash
 from app.front import front
-from .forms import EssayForm
-from ..models import Essay, User
+from .forms import EssayForm,CommentForm
+from ..models import Essay, User,Comment
 from flask_login import current_user,login_required
 from .. import db
 
@@ -44,10 +44,28 @@ def user(nickname):
     user = User.query.filter_by(nickname=nickname).first_or_404()
     return render_template('user.html', user=user)
 
-@front.route('/post/<int:id>')
+@front.route('/post/<int:id>',methods=['GET', 'POST'])
 def post_essay(id):
     essay = Essay.query.get_or_404(id)
-    return render_template('post.html', essays=[essay])
+    form = CommentForm()
+
+    if form.validate_on_submit():
+        comment = Comment(body_html=form.body.data,
+                          essay=essay,
+                          )
+        db.session.add(comment)
+        db.session.commit()
+        flash('评论已经更新.')
+        return redirect(url_for('.post_essay', id=essay.id, page=-1))
+
+    page = request.args.get('page', 1, type=int)
+    pagination = Comment.query.order_by(Comment.timestamp.desc()).paginate(
+        page, per_page=current_app.config['FLASKY_POSTS_PER_PAGE'],
+        error_out=False)
+    comments = pagination.items
+
+    return render_template('post.html', essays=[essay],comments=comments,
+                           pagination=pagination,form=form)
 
 
 @front.route('/edit/<int:id>', methods=['GET', 'POST'])
@@ -63,3 +81,4 @@ def edit_essay(id):
         return redirect(url_for('.post_essay', id=essay.id))
     form.body.data = essay.body_html
     return render_template('edit_essay.html', form=form)
+

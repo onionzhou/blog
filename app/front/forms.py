@@ -9,12 +9,15 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField,SubmitField
 from wtforms.validators import DataRequired
-from wtforms import ValidationError
-#from ..models import Role, User
 from flask_pagedown.fields import PageDownField
 
 class EssayForm(FlaskForm):
     title =StringField("标题",validators=[DataRequired()])
     # body = TextAreaField("写点什么吗？",validators=[DataRequired()])
     body = PageDownField("写点什么吗？", validators=[DataRequired()])
+    submit = SubmitField('提交')
+
+class CommentForm(FlaskForm):
+    # body = TextAreaField("写点什么吗？",validators=[DataRequired()])
+    body = PageDownField("来点意见？", validators=[DataRequired()])
     submit = SubmitField('提交')

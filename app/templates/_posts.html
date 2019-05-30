@@ -1,27 +1,32 @@
-
 <ul class="posts">
-{% for essay in essays %}
-<li class="post">
-    <div class="post-thumbnail">
-        <a href="{{ url_for('.user', nickname=essay.author.nickname) }}">
-{#          <!--  <img class="img-rounded profile-thumbnail" src="{{ essay.author.gravatar(size=40) }}"-->#}
-        </a>
-    </div>
-    <div class="post-content">
-        <div class="post-date">{{ moment(essay.timestamp).fromNow() }}</div>
-        <div class="post-author"><a href="{{ url_for('.user', nickname=essay.author.nickname) }}">{{ essay.author.nickname }}</a></div>
-        <div class="post-body">
-            {{ essay.body_html }}
-        </div>
-        <div class="post-footer">
-                <a href="{{ url_for('.edit_essay', id=essay.id) }}">
-                    <span class="label label-default">编辑</span>
+    {% for essay in essays %}
+        <li class="post">
+            <div class="post-thumbnail">
+                <a href="{{ url_for('.user', nickname=essay.author.nickname) }}">
+                    {#          <!--  <img class="img-rounded profile-thumbnail" src="{{ essay.author.gravatar(size=40) }}"-->#}
                 </a>
-                <a href="{{ url_for('.post_essay', id=essay.id) }}">
-                    <span class="label label-default">固定连接</span>
-                </a>
-        </div>
-    </div>
-</li>
+            </div>
+            <div class="post-content">
+                <div class="post-date">{{ moment(essay.timestamp).fromNow() }}</div>
+                <div class="post-author"><a
+                        href="{{ url_for('.user', nickname=essay.author.nickname) }}">{{ essay.author.nickname }}</a>
+                </div>
+                <div class="post-body">
+                    {{ essay.body_html }}
+                </div>
+                <div class="post-footer">
+                    <a href="{{ url_for('.edit_essay', id=essay.id) }}">
+                        <span class="label label-default">编辑</span>
+                    </a>
+                    <a href="{{ url_for('.post_essay', id=essay.id) }}">
+                        <span class="label label-default">固定连接</span>
+                    </a>
+
+                    <a href="{{ url_for('.post_essay', id=essay.id) }}#comments">
+                        <span class="label label-primary">{{ essay.comments.count() }} 评论</span>
+                    </a>
+                </div>
+            </div>
+        </li>
     {% endfor %}
 </ul>
