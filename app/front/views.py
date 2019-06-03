@@ -6,11 +6,11 @@
 # @File    : views.py
 # @Software: PyCharm
 
-from flask import render_template, redirect, url_for, request, current_app,flash
+from flask import render_template, redirect, url_for, request, current_app, flash
 from app.front import front
-from .forms import EssayForm,CommentForm
-from ..models import Essay, User,Comment
-from flask_login import current_user,login_required
+from .forms import EssayForm, CommentForm
+from ..models import Essay, User, Comment
+from flask_login import current_user, login_required
 from .. import db
 
 
@@ -44,7 +44,8 @@ def user(nickname):
     user = User.query.filter_by(nickname=nickname).first_or_404()
     return render_template('user.html', user=user)
 
-@front.route('/post/<int:id>',methods=['GET', 'POST'])
+
+@front.route('/post/<int:id>', methods=['GET', 'POST'])
 def post_essay(id):
     essay = Essay.query.get_or_404(id)
     form = CommentForm()
@@ -64,8 +65,8 @@ def post_essay(id):
         error_out=False)
     comments = pagination.items
 
-    return render_template('post.html', essays=[essay],comments=comments,
-                           pagination=pagination,form=form)
+    return render_template('post.html', essays=[essay], comments=comments,
+                           pagination=pagination, form=form)
 
 
 @front.route('/edit/<int:id>', methods=['GET', 'POST'])
@@ -82,3 +83,33 @@ def edit_essay(id):
     form.body.data = essay.body_html
     return render_template('edit_essay.html', form=form)
 
+
+@front.route('/about')
+def about():
+    print("about me  ")
+    return render_template('about.html')
+
+
+@front.route('/blog_list')
+def blog_list():
+    print('list  html ')
+    return render_template('list.html')
+
+
+@front.route('/life')
+def life():
+    print("life")
+    return render_template('life.html')
+
+
+@front.route('/timesheet')
+def timesheet():
+    return render_template('time.html')
+
+@front.route('/leave_message')
+def leave_message():
+    return render_template('gbook.html')
+
+@front.route('/info')
+def info():
+    return render_template('info.html')
