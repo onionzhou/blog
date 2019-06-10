@@ -45,28 +45,35 @@ def user(nickname):
     return render_template('user.html', user=user)
 
 
+
 @front.route('/post/<int:id>', methods=['GET', 'POST'])
 def post_essay(id):
     essay = Essay.query.get_or_404(id)
-    form = CommentForm()
+    front_essay = Essay.query.get_or_404(id-1)
+    back_essay = Essay.query.get_or_404(id+1)
+    return render_template('info.html',essay=essay,front_essay=front_essay,back_essay=back_essay)
 
-    if form.validate_on_submit():
-        comment = Comment(body_html=form.body.data,
-                          essay=essay,
-                          )
-        db.session.add(comment)
-        db.session.commit()
-        flash('评论已经更新.')
-        return redirect(url_for('.post_essay', id=essay.id, page=-1))
-
-    page = request.args.get('page', 1, type=int)
-    pagination = Comment.query.order_by(Comment.timestamp.desc()).paginate(
-        page, per_page=current_app.config['FLASKY_POSTS_PER_PAGE'],
-        error_out=False)
-    comments = pagination.items
-
-    return render_template('post.html', essays=[essay], comments=comments,
-                           pagination=pagination, form=form)
+# def post_essay(id):
+#     essay = Essay.query.get_or_404(id)
+#     form = CommentForm()
+#
+#     if form.validate_on_submit():
+#         comment = Comment(body_html=form.body.data,
+#                           essay=essay,
+#                           )
+#         db.session.add(comment)
+#         db.session.commit()
+#         flash('评论已经更新.')
+#         return redirect(url_for('.post_essay', id=essay.id, page=-1))
+#
+#     page = request.args.get('page', 1, type=int)
+#     pagination = Comment.query.order_by(Comment.timestamp.desc()).paginate(
+#         page, per_page=current_app.config['FLASKY_POSTS_PER_PAGE'],
+#         error_out=False)
+#     comments = pagination.items
+#
+#     return render_template('post.html', essays=[essay], comments=comments,
+#                            pagination=pagination, form=form)
 
 
 @front.route('/edit/<int:id>', methods=['GET', 'POST'])
@@ -104,7 +111,11 @@ def life():
 
 @front.route('/timesheet')
 def timesheet():
-    return render_template('time.html')
+    essays =Essay.query.all()
+    for i in essays:
+        print(i.title)
+    print("dsdddd")
+    return render_template('time.html',essays=essays)
 
 @front.route('/leave_message')
 def leave_message():
@@ -113,3 +124,7 @@ def leave_message():
 @front.route('/info')
 def info():
     return render_template('info.html')
+
+@front.route('/index_old',methods=['GET','POST'])
+def index_old():
+    return render_template('index_old.html')
