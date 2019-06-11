@@ -21,7 +21,7 @@
 <header>
     <div class="menu">
     <nav class="nav" id="topnav">
-      <h1 class="logo"><a href="http://www.baidu.com">onion博客</a></h1>
+      <h1 class="logo"><a href="{{ url_for('auth.login') }}">onion博客</a></h1>
       <li><a href="{{ url_for('front.index') }}">网站首页</a> </li>
       <li><a href="{{ url_for('front.about') }}">关于我</a> </li>
 
@@ -43,20 +43,16 @@
       </li>
       <li><a href="{{ url_for('front.timesheet') }}">时间轴</a> </li>
       <li><a href="{{ url_for('front.leave_message') }}">留言</a> </li>
-      <!--search begin-->
-      <div id="search_bar" class="search_bar">
-        <form  id="searchform" action="[!--news.url--]e/search/index.php" method="post" name="searchform">
-          <input class="input" placeholder="想搜点什么呢..." type="text" name="keyboard" id="keyboard">
-          <input type="hidden" name="show" value="title" />
-          <input type="hidden" name="tempid" value="1" />
-          <input type="hidden" name="tbname" value="news">
-          <input type="hidden" name="Submit" value="搜索" />
-          <span class="search_ico"></span>
-        </form>
-      </div>
-      <!--search end-->
     </nav>
   </div>
+
+
+<div class="">
+    {% for message in get_flashed_messages() %}
+        {{ message }}
+    {% endfor %}
+</div>
+
 </header>
 <!--menu end-->
 

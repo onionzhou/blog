@@ -25,7 +25,7 @@ def test_sql_data():
     db.session.add(u)
     db.session.commit()
 
-def test_essay(count=100):
+def test_essay(count=1):
 
     app = create_app('Development')
     app_context = app.app_context()
@@ -36,7 +36,7 @@ def test_essay(count=100):
     for i in range(count):
         u = User.query.offset(randint(0, user_count - 1)).first()
         p = Essay(title=fake.text(max_nb_chars=64),
-                body_html=fake.text(),
+                body_html=fake.text(max_nb_chars=1000),
                  timestamp=fake.past_date(),
                  author=u)
         db.session.add(p)
@@ -44,6 +44,6 @@ def test_essay(count=100):
 
 
 if __name__ == '__main__':
-    test_sql_data()
+    # test_sql_data()
     test_essay()
     # pass

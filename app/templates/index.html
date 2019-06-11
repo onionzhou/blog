@@ -1,8 +1,10 @@
 {% include "_base.html" %}
-
+{% import "_macros.html" as macros %}
 <article>
   <!--banner begin-->
   <div class="blank"></div>
+
+
   <!--blogsbox begin-->
   <div class="blogsbox">
       {% for essay in essays %}
@@ -22,12 +24,21 @@
       </div>
     </div>
       {% endfor %}
+ {% if pagination %}
+<div class="pagelist">
+    {{ macros.pagination_widget(pagination, '.index') }}
+</div>
+{% endif %}
+
 </div>
   <!--blogsbox end-->
 {% include "_right.html" %}
+
 </article>
 
+
 {% include "_footer.html" %}
+
 
 
 

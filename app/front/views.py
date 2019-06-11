@@ -48,10 +48,29 @@ def user(nickname):
 
 @front.route('/post/<int:id>', methods=['GET', 'POST'])
 def post_essay(id):
+    front_id = id - 1
+    back_id = id + 1
     essay = Essay.query.get_or_404(id)
-    front_essay = Essay.query.get_or_404(id-1)
-    back_essay = Essay.query.get_or_404(id+1)
-    return render_template('info.html',essay=essay,front_essay=front_essay,back_essay=back_essay)
+    front_essay = Essay.query.get(front_id)
+    back_essay = Essay.query.get(back_id)
+
+    if not back_essay:
+        back_essay=essay
+    if not front_essay:
+        front_essay=essay
+
+    page = request.args.get('page', 1, type=int)
+    pagination = Comment.query.order_by(Comment.timestamp.desc()).paginate(
+            page, per_page=current_app.config['FLASKY_POSTS_PER_PAGE'],
+            error_out=False)
+    comments = pagination.items
+
+    return render_template('info.html',
+                           essay=essay,
+                           front_essay=front_essay,
+                           back_essay=back_essay,
+                           pagination=pagination,
+                           comments=comments)
 
 # def post_essay(id):
 #     essay = Essay.query.get_or_404(id)
@@ -82,13 +101,25 @@ def edit_essay(id):
     essay = Essay.query.get_or_404(id)
     form = EssayForm()
     if form.validate_on_submit():
+        essay.title=form.title.data
         essay.body_html = form.body.data
         db.session.add(essay)
         db.session.commit()
         flash('文章已更新.')
         return redirect(url_for('.post_essay', id=essay.id))
+    form.title.data =essay.title
     form.body.data = essay.body_html
     return render_template('edit_essay.html', form=form)
+
+@front.route('/del/<int:id>', methods=['GET', 'POST'])
+@login_required
+def del_essay(id):
+    print("del ... ")
+    essay = Essay.query.get_or_404(id)
+    db.session.delete(essay)
+    db.session.commit()
+    flash("文章已经删除")
+    return  redirect(url_for(".index"))
 
 
 @front.route('/about')
@@ -112,9 +143,8 @@ def life():
 @front.route('/timesheet')
 def timesheet():
     essays =Essay.query.all()
-    for i in essays:
-        print(i.title)
-    print("dsdddd")
+    # print(essays)
+
     return render_template('time.html',essays=essays)
 
 @front.route('/leave_message')
