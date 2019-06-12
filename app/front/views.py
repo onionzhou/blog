@@ -8,8 +8,8 @@
 
 from flask import render_template, redirect, url_for, request, current_app, flash
 from app.front import front
-from .forms import EssayForm, CommentForm
-from ..models import Essay, User, Comment
+from .forms import EssayForm, CommentForm,DiscussForm
+from ..models import Essay, User, Comment,Discuss
 from flask_login import current_user, login_required
 from .. import db
 
@@ -54,6 +54,18 @@ def post_essay(id):
     front_essay = Essay.query.get(front_id)
     back_essay = Essay.query.get(back_id)
 
+    form = CommentForm()
+
+    if form.validate_on_submit():
+        comment = Comment(body_html=form.body.data,
+                              essay=essay,
+                              )
+        db.session.add(comment)
+        db.session.commit()
+        flash('评论已经更新.')
+        return redirect(url_for('.post_essay', id=essay.id, page=-1))
+
+
     if not back_essay:
         back_essay=essay
     if not front_essay:
@@ -70,7 +82,8 @@ def post_essay(id):
                            front_essay=front_essay,
                            back_essay=back_essay,
                            pagination=pagination,
-                           comments=comments)
+                           comments=comments,
+                           form=form)
 
 # def post_essay(id):
 #     essay = Essay.query.get_or_404(id)
@@ -143,18 +156,24 @@ def life():
 @front.route('/timesheet')
 def timesheet():
     essays =Essay.query.all()
-    # print(essays)
-
     return render_template('time.html',essays=essays)
 
-@front.route('/leave_message')
+@front.route('/leave_message',methods=["GET","POST"])
 def leave_message():
-    return render_template('gbook.html')
+    form = DiscussForm()
+
+    if form.validate_on_submit():
+        d = Discuss(body=form.body.data)
+        db.session.add(d)
+        db.session.commit()
+        return redirect(url_for('.leave_message'))
+
+
+    discuss = Discuss.query.order_by(Discuss.timestamp.desc())
+    return render_template('gbook.html',form=form,comments=discuss)
 
 @front.route('/info')
 def info():
     return render_template('info.html')
 
-@front.route('/index_old',methods=['GET','POST'])
-def index_old():
-    return render_template('index_old.html')
+

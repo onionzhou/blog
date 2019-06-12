@@ -1,11 +1,13 @@
-<ul class="comments">
+{% import "bootstrap/wtf.html" as wtf %}
+
+<div >
+            {{ wtf.quick_form(form) }}
+</div>
+
+
+<ul class="comment">
     {% for comment in comments %}
     <li class="comment">
-        <div class="comment-thumbnail">
-{#            <a href="{{ url_for('.user', nickname=comment.author.username) }}">#}
-{#                <img class="img-rounded profile-thumbnail" src="{{ comment.author.gravatar(size=40) }}">#}
-{#            </a>#}
-        </div>
         <div class="comment-content">
             <div class="comment-date">{{ moment(comment.timestamp).fromNow() }}</div>
 {#            <div class="comment-author"><a href="{{ url_for('.user', nickname=comment.author.nickname) }}">{{ comment.author.nickname }}</a></div>#}

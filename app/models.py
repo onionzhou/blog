@@ -125,7 +125,13 @@ class Comment(db.Model):
 
 db.event.listen(Comment.body, 'set', Comment.on_changed_body)
 
+#留言板块
+class Discuss(db.Model):
+    __tablename__ = 'discuss'
 
+    id = db.Column(db.Integer, primary_key=True)
+    body=db.Column(db.Text)
+    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
 
 
 

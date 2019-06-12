@@ -6,10 +6,10 @@
 # @File    : data_fake.py
 # @Software: PyCharm
 
-from app.models import User,Essay
+from app.models import User,Essay,Discuss
 from app import db,create_app
 from faker import Faker
-from random import randint
+
 
 
 def test_sql_data():
@@ -25,7 +25,7 @@ def test_sql_data():
     db.session.add(u)
     db.session.commit()
 
-def test_essay(count=1):
+def test_essay(count=100):
 
     app = create_app('Development')
     app_context = app.app_context()
@@ -42,8 +42,19 @@ def test_essay(count=1):
         db.session.add(p)
     db.session.commit()
 
+def test_discuss(count=30):
+    app = create_app('Development')
+    app_context = app.app_context()
+    app_context.push()
+    db.create_all()
+    fake = Faker()
+    for i in range(count):
+        d =Discuss(body=fake.text())
+        db.session.add(d)
+    db.session.commit()
+
 
 if __name__ == '__main__':
     # test_sql_data()
-    test_essay()
-    # pass
+    # test_essay()
+    test_discuss()
