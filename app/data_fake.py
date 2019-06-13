@@ -9,6 +9,7 @@
 from app.models import User,Essay,Discuss
 from app import db,create_app
 from faker import Faker
+from random import  randint
 
 
 
@@ -55,6 +56,6 @@ def test_discuss(count=30):
 
 
 if __name__ == '__main__':
-    # test_sql_data()
-    # test_essay()
+    test_sql_data()
+    test_essay()
     test_discuss()

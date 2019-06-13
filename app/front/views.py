@@ -58,7 +58,8 @@ def post_essay(id):
 
     if form.validate_on_submit():
         comment = Comment(body_html=form.body.data,
-                              essay=essay,
+                          essay=essay,
+
                               )
         db.session.add(comment)
         db.session.commit()
@@ -72,9 +73,12 @@ def post_essay(id):
         front_essay=essay
 
     page = request.args.get('page', 1, type=int)
-    pagination = Comment.query.order_by(Comment.timestamp.desc()).paginate(
-            page, per_page=current_app.config['FLASKY_POSTS_PER_PAGE'],
-            error_out=False)
+
+    pagination = Comment.query.filter(Comment.essay_id==id).order_by(Comment.timestamp.desc()).paginate(
+        page, per_page=current_app.config['FLASKY_POSTS_PER_PAGE'],
+                error_out=False
+    )
+
     comments = pagination.items
 
     return render_template('info.html',
@@ -85,28 +89,6 @@ def post_essay(id):
                            comments=comments,
                            form=form)
 
-# def post_essay(id):
-#     essay = Essay.query.get_or_404(id)
-#     form = CommentForm()
-#
-#     if form.validate_on_submit():
-#         comment = Comment(body_html=form.body.data,
-#                           essay=essay,
-#                           )
-#         db.session.add(comment)
-#         db.session.commit()
-#         flash('评论已经更新.')
-#         return redirect(url_for('.post_essay', id=essay.id, page=-1))
-#
-#     page = request.args.get('page', 1, type=int)
-#     pagination = Comment.query.order_by(Comment.timestamp.desc()).paginate(
-#         page, per_page=current_app.config['FLASKY_POSTS_PER_PAGE'],
-#         error_out=False)
-#     comments = pagination.items
-#
-#     return render_template('post.html', essays=[essay], comments=comments,
-#                            pagination=pagination, form=form)
-
 
 @front.route('/edit/<int:id>', methods=['GET', 'POST'])
 @login_required
@@ -115,7 +97,7 @@ def edit_essay(id):
     form = EssayForm()
     if form.validate_on_submit():
         essay.title=form.title.data
-        essay.body_html = form.body.data
+        essay.body = form.body.data
         db.session.add(essay)
         db.session.commit()
         flash('文章已更新.')
