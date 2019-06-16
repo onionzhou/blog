@@ -13,6 +13,7 @@ from ..models import Essay, User, Comment,Discuss
 from flask_login import current_user, login_required
 from .. import db
 from random import randint
+import time
 
 
 @front.route('/', methods=['GET', 'POST'])
@@ -141,8 +142,10 @@ def add_essay():
     essay=Essay()
     form =EssayForm()
     if form.validate_on_submit():
+        now_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
         essay.title = form.title.data
         essay.body = form.body.data
+        essay.timestamp=now_time
         essay.author = current_user._get_current_object()
         db.session.add(essay)
         db.session.commit()
@@ -170,7 +173,7 @@ def life():
 
 @front.route('/timesheet')
 def timesheet():
-    essays =Essay.query.all()
+    essays =Essay.query.order_by(Essay.timestamp.desc()).all()
     return render_template('time.html',essays=essays)
 
 @front.route('/leave_message',methods=["GET","POST"])

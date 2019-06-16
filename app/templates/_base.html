@@ -43,7 +43,8 @@
       <li><a href="{{ url_for('front.leave_message') }}">留言</a> </li>
         <li><a href="{{ url_for('front.about') }}">关于我</a> </li>
         {% if current_user.is_authenticated %}
-        <li><a href="{{ url_for('front.add_essay') }}">来一篇</a> </li>
+        <li><a href="{{ url_for('front.add_essay') }}">写一篇</a> </li>
+            <li><a href="{{  url_for('auth.logout')  }}">退出登录</a> </li>
         {% endif %}
     </nav>
   </div>

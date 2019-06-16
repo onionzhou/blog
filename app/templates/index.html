@@ -13,7 +13,7 @@
                                                       alt=""></a></span>
         <p class="blogtext">
             {% if essay.body_html %}
-            {{ essay.body_html[:300] | safe }}...
+            {{ essay.body_html|striptags  }}
             {% else %}
                 {{ essay.body }}
             {% endif %}

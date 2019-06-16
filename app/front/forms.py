@@ -23,7 +23,7 @@ class CommentForm(FlaskForm):
     submit = SubmitField('提交')
 
 class DiscussForm(FlaskForm):
-    body = TextAreaField("留个小脚印？",validators=[DataRequired()])
-    # body = PageDownField("来点意见？", validators=[DataRequired()])
+    # body = TextAreaField("留个小脚印？",validators=[DataRequired()])
+    body = PageDownField("来点意见？", validators=[DataRequired()])
     submit = SubmitField('提交')
 
