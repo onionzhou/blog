@@ -14,6 +14,7 @@ from random import  randint
 
 
 def test_sql_data():
+    print("dsdds")
     app=create_app('Development')
     app_context =app.app_context()
     app_context.push()
@@ -26,6 +27,7 @@ def test_sql_data():
     db.session.add(u)
     db.session.commit()
 
+
 def test_essay(count=100):
 
     app = create_app('Development')
@@ -37,7 +39,7 @@ def test_essay(count=100):
     for i in range(count):
         u = User.query.offset(randint(0, user_count - 1)).first()
         p = Essay(title=fake.text(max_nb_chars=64),
-                body_html=fake.text(max_nb_chars=1000),
+                body=fake.text(max_nb_chars=1000),
                  timestamp=fake.past_date(),
                  author=u)
         db.session.add(p)

@@ -20,7 +20,7 @@
       <h3 class="news_title">{{ essay.title }}</h3>
       <div class="bloginfo">
         <ul>
-          <li class="author"><a href="/">{{ essay.author }}</a></li>
+          <li class="author"><a href="/">{{ essay.author.nickname }}</a></li>
           <li class="lmname"><a href="/">学无止境</a></li>
           <li class="timer">{{ essay.timestamp }}</li>
           <li class="view">4567已阅读</li>
@@ -30,7 +30,11 @@
 {#      <div class="tags"><a href="/" target="_blank">个人博客</a> &nbsp; <a href="/" target="_blank">小世界</a></div>#}
 {#      <div class="news_about"><strong>简介</strong>个人博客，用来做什么？我刚开始就把它当做一个我吐槽心情的地方，也就相当于一个网络记事本，写上一些关于自己生活工作中的小情小事，也会放上一些照片，音乐。每天工作回家后就能访问自己的网站，一边听着音乐，一边写写文章。</div>#}
       <div class="news_con">
-          {{ essay.body_html |safe }}
+          {% if essay.body_html %}
+          {{ essay.body_html |safe  }}
+          {% else %}
+          {{ essay.body }}
+          {% endif %}
       </div>
     </div>
 

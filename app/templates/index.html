@@ -4,7 +4,6 @@
   <!--banner begin-->
   <div class="blank"></div>
 
-
   <!--blogsbox begin-->
   <div class="blogsbox">
       {% for essay in essays %}
@@ -12,11 +11,17 @@
       <h3 class="blogtitle"><a href={{ url_for('front.post_essay',id=essay.id) }} target="_blank">{{ essay.title }}</a></h3>
       <span class="blogpic"><a href="/" title=""><img src="{{ url_for('static', filename='images/toppic01.jpg') }}"
                                                       alt=""></a></span>
-        <p class="blogtext">{{ essay.body_html }}</p>
+        <p class="blogtext">
+            {% if essay.body_html %}
+            {{ essay.body_html[:300] | safe }}...
+            {% else %}
+                {{ essay.body }}
+            {% endif %}
+        </p>
       <div class="bloginfo">
         <ul>
-          <li class="author"><a href="/">{{ essay.author }}</a></li>
-          <li class="lmname"><a href="/">学无止境</a></li>
+          <li class="author"><a href="#">{{ essay.author.nickname }}</a></li>
+          <li class="lmname"><a href="#">学无止境</a></li>
           <li class="timer">{{ essay.timestamp }}</li>
           <li class="view"><span>34567</span>已阅读</li>
           <li class="like">9999</li>

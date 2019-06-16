@@ -22,27 +22,29 @@
     <div class="menu">
     <nav class="nav" id="topnav">
       <h1 class="logo"><a href="{{ url_for('auth.login') }}">onion博客</a></h1>
-      <li><a href="{{ url_for('front.index') }}">网站首页</a> </li>
-      <li><a href="{{ url_for('front.about') }}">关于我</a> </li>
-
+      <li><a href="{{ url_for('front.index') }}">主页</a> </li>
+      <!--
       <li><a href="{{ url_for('front.blog_list') }}">学无止境</a>
         <ul class="sub-nav">
           <li><a href="{{ url_for('front.blog_list') }}">front.blog_list</a></li>
-          <li><a href="{{ url_for('front.blog_list') }}">CSS3|Html5</a></li>
-          <li><a href="{{ url_for('front.blog_list') }}">网站建设</a></li>
-          <li><a href="{{ url_for('front.blog_list') }}">推荐工具</a></li>
+          <li><a href="{{ url_for('front.blog_list') }}">front.blog_list</a></li>
         </ul>
       </li>
+        -->
+        <!--
       <li><a href="{{ url_for('front.life') }}">慢生活</a>
         <ul class="sub-nav">
           <li><a href="{{ url_for('front.life') }}">front.life</a></li>
           <li><a href="{{ url_for('front.life') }}">front.life</a></li>
-          <li><a href="{{ url_for('front.life') }}">程序人生</a></li>
-          <li><a href="{{ url_for('front.life') }}">经典语录</a></li>
         </ul>
       </li>
+      -->
       <li><a href="{{ url_for('front.timesheet') }}">时间轴</a> </li>
       <li><a href="{{ url_for('front.leave_message') }}">留言</a> </li>
+        <li><a href="{{ url_for('front.about') }}">关于我</a> </li>
+        {% if current_user.is_authenticated %}
+        <li><a href="{{ url_for('front.add_essay') }}">来一篇</a> </li>
+        {% endif %}
     </nav>
   </div>
 

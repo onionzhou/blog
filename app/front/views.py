@@ -12,10 +12,12 @@ from .forms import EssayForm, CommentForm,DiscussForm
 from ..models import Essay, User, Comment,Discuss
 from flask_login import current_user, login_required
 from .. import db
+from random import randint
 
 
 @front.route('/', methods=['GET', 'POST'])
 def index():
+    rand_essay=[]
     form = EssayForm()
     if form.validate_on_submit():
         essay = Essay()
@@ -33,10 +35,21 @@ def index():
         error_out=False)
     essays = pagination.items
 
+    essay_nums = Essay.query.count()
+    #侧边栏只随机设置7篇文章
+    for _ in range(7):
+        essay_id =randint(1,essay_nums)
+        rand_essay.append(Essay.query.get(essay_id))
+
+
     # essays = Essay.query.order_by(Essay.timestamp.desc()).all()
 
-    return render_template("index.html", form=form, essays=essays,
-                           pagination=pagination)
+
+    return render_template("index.html",
+                           form=form,
+                           essays=essays,
+                           pagination=pagination,
+                           rand_essay_list=rand_essay)
 
 
 @front.route('/user/<nickname>')
@@ -48,6 +61,7 @@ def user(nickname):
 
 @front.route('/post/<int:id>', methods=['GET', 'POST'])
 def post_essay(id):
+    rand_essay = []
     front_id = id - 1
     back_id = id + 1
     essay = Essay.query.get_or_404(id)
@@ -59,7 +73,6 @@ def post_essay(id):
     if form.validate_on_submit():
         comment = Comment(body_html=form.body.data,
                           essay=essay,
-
                               )
         db.session.add(comment)
         db.session.commit()
@@ -81,12 +94,18 @@ def post_essay(id):
 
     comments = pagination.items
 
+    essay_nums = Essay.query.count()
+    for _ in range(7):
+        essay_id = randint(1, essay_nums)
+        rand_essay.append(Essay.query.get(essay_id))
+
     return render_template('info.html',
                            essay=essay,
                            front_essay=front_essay,
                            back_essay=back_essay,
                            pagination=pagination,
                            comments=comments,
+                           rand_essay_list=rand_essay,
                            form=form)
 
 
@@ -103,7 +122,7 @@ def edit_essay(id):
         flash('文章已更新.')
         return redirect(url_for('.post_essay', id=essay.id))
     form.title.data =essay.title
-    form.body.data = essay.body_html
+    form.body.data = essay.body
     return render_template('edit_essay.html', form=form)
 
 @front.route('/del/<int:id>', methods=['GET', 'POST'])
@@ -116,6 +135,20 @@ def del_essay(id):
     flash("文章已经删除")
     return  redirect(url_for(".index"))
 
+@front.route("/add_essay",methods=["GET","POST"])
+@login_required
+def add_essay():
+    essay=Essay()
+    form =EssayForm()
+    if form.validate_on_submit():
+        essay.title = form.title.data
+        essay.body = form.body.data
+        essay.author = current_user._get_current_object()
+        db.session.add(essay)
+        db.session.commit()
+        return redirect(url_for(".index"))
+
+    return render_template("add_essay.html",form=form)
 
 @front.route('/about')
 def about():
