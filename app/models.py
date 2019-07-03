@@ -10,10 +10,11 @@
 from  werkzeug.security import generate_password_hash, check_password_hash
 from . import db, login_manager
 from itsdangerous import TimedJSONWebSignatureSerializer as TJWSS
-from flask import current_app
+from flask import current_app,url_for
 from datetime import datetime
 import bleach
 from markdown import markdown
+from app.exceptions import ValidationError
 
 
 
@@ -70,6 +71,29 @@ class User(db.Model):
         db.session.add(self)
         return True
 
+    #令牌认证
+    def generate_auth_token(self, expiration):
+        t = TJWSS(current_app.config['SECRET_KEY'],
+                       expires_in=expiration)
+        return t.dumps({'id': self.id}).decode('utf-8')
+
+    @staticmethod
+    def verify_auth_token(token):
+        t = TJWSS(current_app.config['SECRET_KEY'])
+        try:
+            data = t.loads(token)
+        except:
+            return None
+        return User.query.get(data['id'])
+
+
+    def to_json(self):
+        json_user = {
+            'url': url_for('api.get_user', id=self.id),
+            'username': self.nickrname
+        }
+        return json_user
+
     def __repr__(self):
         return '<User %r>' % (self.nickname)
 
@@ -94,6 +118,26 @@ class Essay(db.Model):
         target.body_html = bleach.linkify(bleach.clean(
             markdown(value, output_format='html'),
             tags=allowed_tags, strip=True))
+    #内部资源转换为JSON
+    def to_json(self):
+        json_post_essay = {
+            'url': url_for('api.get_essay', id=self.id),
+            'body': self.body,
+            'body_html': self.body_html,
+            'timestamp': self.timestamp,
+            'author_url': url_for('api.get_user', id=int(self.user_id)),
+            'comments_url': url_for('api.get_essay_comments', id=self.id),
+            'comment_count': self.comments.count()
+        }
+        return json_post_essay
+
+    #add essay by post json
+    @staticmethod
+    def from_json(json_post_essay):
+        body = json_post_essay.get("body")
+        if body is None or body =="":
+            raise ValidationError("文章为空，无法提交")
+        return Essay(body=body)
 
     def __repr__(self):
         return '<Essay %r>' % (self.title)

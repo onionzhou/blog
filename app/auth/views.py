@@ -64,8 +64,8 @@ def confirm(token):
         return redirect(url_for('front.index'))
     if current_user.confirm(token):
         db.session.commit()
-        flash('You have confirmed your account. Thanks!')
+        flash('请确认你的账号.')
     else:
-        flash('The confirmation link is invalid or has expired.')
+        flash('提交无效或者超时.')
     return redirect(url_for('front.index'))
 
